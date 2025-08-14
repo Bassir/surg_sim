@@ -203,15 +203,35 @@ class VolumeCubeMaterial: SCNMaterial {
             return nil
         }
         
-        // Convert volume data first and validate size
-        let convertedData = convertToInt16DataOptimized(volumeData)
+        // Decide whether to downsample before converting to Int16 to keep memory under limits
+        let maxOutputBytes = 1024 * 1024 * 2048 // 2GB
+        let inputCount = volumeData.count
+        let bytesPerPixel = detectBytesPerPixel(data: volumeData, inputCount: inputCount)
+        let pixelCount = inputCount / max(bytesPerPixel, 1)
+        let estimatedInt16Bytes = pixelCount * MemoryLayout<Int16>.size
+        
+        var workingData = volumeData
+        var workingDims = dimensions
+        
+        if bytesPerPixel == 1 && estimatedInt16Bytes > maxOutputBytes {
+            // Compute a downsample factor for X/Y to bring the output under the limit
+            let factor = computeDownsampleFactor(width: dimensions.x, height: dimensions.y, depth: dimensions.z, bytesPerVoxel: MemoryLayout<Int16>.size, maxBytes: maxOutputBytes)
+            print("⚠️ Output would be too large (\(estimatedInt16Bytes/1024/1024)MB). Downsampling XY by factor \(factor)")
+            let result = downsampleGrayscale8Bit(data: volumeData, width: dimensions.x, height: dimensions.y, depth: dimensions.z, factorXY: factor)
+            workingData = result.data
+            workingDims = SIMD3<Int>(result.width, result.height, result.depth)
+            print("✅ Downsampled to \(workingDims.x)x\(workingDims.y)x\(workingDims.z) (\(workingData.count) bytes)")
+        }
+        
+        // Convert volume data and validate size
+        let convertedData = convertToInt16DataOptimized(workingData)
         guard !convertedData.isEmpty else {
             print("❌ Data conversion failed")
             return nil
         }
         
         // Calculate expected size for the 3D texture
-        let expectedVoxels = dimensions.x * dimensions.y * dimensions.z
+        let expectedVoxels = workingDims.x * workingDims.y * workingDims.z
         let expectedBytes = expectedVoxels * MemoryLayout<Int16>.size
         
         print("📊 Expected: \(expectedVoxels) voxels, \(expectedBytes) bytes")
@@ -219,23 +239,22 @@ class VolumeCubeMaterial: SCNMaterial {
         
         // Check if we have enough data
         if convertedData.count < expectedBytes {
-            print("⚠️ Not enough data for texture. Using available data and adjusting dimensions.")
-            // Calculate maximum possible dimensions with available data
+            print("⚠️ Not enough data for texture. Using available data and adjusting depth.")
             let actualVoxels = convertedData.count / MemoryLayout<Int16>.size
-            let adjustedDepth = max(1, actualVoxels / (dimensions.x * dimensions.y))
-            print("📏 Adjusting depth from \(dimensions.z) to \(adjustedDepth)")
-            return createTextureWithData(device: device, 
-                                       data: convertedData, 
-                                       width: dimensions.x, 
-                                       height: dimensions.y, 
-                                       depth: adjustedDepth)
+            let adjustedDepth = max(1, actualVoxels / (workingDims.x * workingDims.y))
+            print("📏 Adjusting depth from \(workingDims.z) to \(adjustedDepth)")
+            return createTextureWithData(device: device,
+                                         data: convertedData,
+                                         width: workingDims.x,
+                                         height: workingDims.y,
+                                         depth: adjustedDepth)
         } else {
-            // Use the requested dimensions
-            return createTextureWithData(device: device, 
-                                       data: convertedData, 
-                                       width: dimensions.x, 
-                                       height: dimensions.y, 
-                                       depth: dimensions.z)
+            // Use the requested (possibly downsampled) dimensions
+            return createTextureWithData(device: device,
+                                         data: convertedData,
+                                         width: workingDims.x,
+                                         height: workingDims.y,
+                                         depth: workingDims.z)
         }
     }
     
@@ -364,7 +383,7 @@ class VolumeCubeMaterial: SCNMaterial {
                 print("🧮 Testing \(bytesPerPixel) bytes/pixel: \(pixelCount) pixels")
                 
                 // Reasonable pixel count (not too small, not ridiculously large)
-                if pixelCount >= 1000 && pixelCount <= 50_000_000 {
+                if pixelCount >= 1000 && pixelCount <= 5_000_000_000 {
                     print("✅ Detected format: \(bytesPerPixel) bytes per pixel, \(pixelCount) pixels")
                     return bytesPerPixel
                 } else {
@@ -378,6 +397,52 @@ class VolumeCubeMaterial: SCNMaterial {
         // Default to grayscale if detection fails
         print("⚠️ Format detection failed, defaulting to grayscale (1 byte/pixel)")
         return 1
+    }
+
+    private func computeDownsampleFactor(width: Int, height: Int, depth: Int, bytesPerVoxel: Int, maxBytes: Int) -> Int {
+        var factor = 2
+        while factor < 16 { // cap factor to avoid over-reduction
+            let newW = max(1, width / factor)
+            let newH = max(1, height / factor)
+            let voxels = newW * newH * depth
+            let bytes = voxels * bytesPerVoxel
+            if bytes <= maxBytes { return factor }
+            factor += 1
+        }
+        return factor
+    }
+
+    private func downsampleGrayscale8Bit(data: Data, width: Int, height: Int, depth: Int, factorXY: Int) -> (data: Data, width: Int, height: Int, depth: Int) {
+        let newW = max(1, width / factorXY)
+        let newH = max(1, height / factorXY)
+        let newD = depth
+        let outputCount = newW * newH * newD
+        var out = Data(count: outputCount)
+        
+        out.withUnsafeMutableBytes { outBuf in
+            guard let outPtr = outBuf.bindMemory(to: UInt8.self).baseAddress else { return }
+            data.withUnsafeBytes { inBuf in
+                guard let inPtr = inBuf.bindMemory(to: UInt8.self).baseAddress else { return }
+                let srcSliceStride = width * height
+                let dstSliceStride = newW * newH
+                for z in 0..<newD {
+                    let srcZBase = z * srcSliceStride
+                    let dstZBase = z * dstSliceStride
+                    for y in 0..<newH {
+                        let srcY = y * factorXY
+                        let srcRowBase = srcZBase + srcY * width
+                        let dstRowBase = dstZBase + y * newW
+                        for x in 0..<newW {
+                            let srcX = x * factorXY
+                            let srcIdx = srcRowBase + srcX
+                            let dstIdx = dstRowBase + x
+                            outPtr[dstIdx] = inPtr[srcIdx]
+                        }
+                    }
+                }
+            }
+        }
+        return (out, newW, newH, newD)
     }
     
     private func processRGBAData(inputPtr: UnsafePointer<UInt8>, outputPtr: UnsafeMutablePointer<Int16>, pixelCount: Int) -> Bool {
