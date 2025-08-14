@@ -99,10 +99,9 @@ public:
         float stepSize;
     };
     
-    static float3 calGradient(texture3d<short, access::sample> volume,
+    static float3 calGradient(texture3d<float, access::sample> volume,
                               float3 coord)
     {
-        // Approximate dimension from LOD 0 size if available via derivatives
         // Fallback to a safe step based on 256^3
         float3 dimension = float3(256, 256, 256);
         if(dimension.x < 1.0 || dimension.y < 1.0 || dimension.z < 1.0)
