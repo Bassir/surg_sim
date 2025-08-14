@@ -1,0 +1,295 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E21EEDA72E07C8CA0086908F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EED992E07C8CA0086908F /* ContentView.swift */; };
+		E21EEDA82E07C8CA0086908F /* SurgeonSimulatorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EED9A2E07C8CA0086908F /* SurgeonSimulatorApp.swift */; };
+		E21EEDA92E07C8CA0086908F /* VolumeShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E21EEDA02E07C8CA0086908F /* VolumeShaders.metal */; };
+		E21EEDAA2E07C8CA0086908F /* MatrixUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EED9F2E07C8CA0086908F /* MatrixUtilities.swift */; };
+		E21EEDAC2E07C8CA0086908F /* VolumeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EEDA12E07C8CA0086908F /* VolumeView.swift */; };
+		E21EEDB12E07D34C0086908F /* shared.metal in Sources */ = {isa = PBXBuildFile; fileRef = E21EEDAD2E07D34C0086908F /* shared.metal */; };
+		E21EEDB32E07D34C0086908F /* VolumeTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EEDB02E07D34C0086908F /* VolumeTypes.swift */; };
+		E21EEDB42E07D34C0086908F /* VolumeCubeMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EEDAE2E07D34C0086908F /* VolumeCubeMaterial.swift */; };
+		E21EEDB62E07EFDA0086908F /* TransferFunctionEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EEDB52E07EFDA0086908F /* TransferFunctionEditor.swift */; };
+		E21EEDB82E07EFE80086908F /* Spline.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EEDB72E07EFE80086908F /* Spline.swift */; };
+		E21EEDBA2E07EFF00086908F /* TransferFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EEDB92E07EFF00086908F /* TransferFunction.swift */; };
+		E21EEDBC2E07F0350086908F /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EEDBB2E07F0350086908F /* Math.swift */; };
+		E21EEF3C2E095D9D0086908F /* NativeVideoProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21EEF3B2E095D9D0086908F /* NativeVideoProcessor.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		9E3E2F482D13A7E300A7C2A1 /* SurgeonSimulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SurgeonSimulator.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E21EED992E07C8CA0086908F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E21EED9A2E07C8CA0086908F /* SurgeonSimulatorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurgeonSimulatorApp.swift; sourceTree = "<group>"; };
+		E21EED9F2E07C8CA0086908F /* MatrixUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixUtilities.swift; sourceTree = "<group>"; };
+		E21EEDA02E07C8CA0086908F /* VolumeShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = VolumeShaders.metal; sourceTree = "<group>"; };
+		E21EEDA12E07C8CA0086908F /* VolumeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeView.swift; sourceTree = "<group>"; };
+		E21EEDA42E07C8CA0086908F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E21EEDAD2E07D34C0086908F /* shared.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shared.metal; sourceTree = "<group>"; };
+		E21EEDAE2E07D34C0086908F /* VolumeCubeMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeCubeMaterial.swift; sourceTree = "<group>"; };
+		E21EEDB02E07D34C0086908F /* VolumeTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeTypes.swift; sourceTree = "<group>"; };
+		E21EEDB52E07EFDA0086908F /* TransferFunctionEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferFunctionEditor.swift; sourceTree = "<group>"; };
+		E21EEDB72E07EFE80086908F /* Spline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spline.swift; sourceTree = "<group>"; };
+		E21EEDB92E07EFF00086908F /* TransferFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferFunction.swift; sourceTree = "<group>"; };
+		E21EEDBB2E07F0350086908F /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
+		E21EEF3B2E095D9D0086908F /* NativeVideoProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeVideoProcessor.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		9E3E2F412D13A7E300A7C2A1 = {
+			isa = PBXGroup;
+			children = (
+				9E3E2F492D13A7E300A7C2A1 /* Products */,
+				E21EEDA62E07C8CA0086908F /* Source */,
+			);
+			sourceTree = "<group>";
+		};
+		9E3E2F492D13A7E300A7C2A1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9E3E2F482D13A7E300A7C2A1 /* SurgeonSimulator.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E21EED9B2E07C8CA0086908F /* App */ = {
+			isa = PBXGroup;
+			children = (
+				E21EED992E07C8CA0086908F /* ContentView.swift */,
+				E21EED9A2E07C8CA0086908F /* SurgeonSimulatorApp.swift */,
+				E21EEF3B2E095D9D0086908F /* NativeVideoProcessor.swift */,
+				E21EEDB52E07EFDA0086908F /* TransferFunctionEditor.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		E21EEDA22E07C8CA0086908F /* Rendering */ = {
+			isa = PBXGroup;
+			children = (
+				E21EEDBB2E07F0350086908F /* Math.swift */,
+				E21EED9F2E07C8CA0086908F /* MatrixUtilities.swift */,
+				E21EEDAD2E07D34C0086908F /* shared.metal */,
+				E21EEDB72E07EFE80086908F /* Spline.swift */,
+				E21EEDB92E07EFF00086908F /* TransferFunction.swift */,
+				E21EEDAE2E07D34C0086908F /* VolumeCubeMaterial.swift */,
+				E21EEDA02E07C8CA0086908F /* VolumeShaders.metal */,
+				E21EEDB02E07D34C0086908F /* VolumeTypes.swift */,
+				E21EEDA12E07C8CA0086908F /* VolumeView.swift */,
+			);
+			path = Rendering;
+			sourceTree = "<group>";
+		};
+		E21EEDA52E07C8CA0086908F /* SupportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				E21EEDA42E07C8CA0086908F /* Info.plist */,
+			);
+			path = SupportingFiles;
+			sourceTree = "<group>";
+		};
+		E21EEDA62E07C8CA0086908F /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				E21EED9B2E07C8CA0086908F /* App */,
+				E21EEDA22E07C8CA0086908F /* Rendering */,
+				E21EEDA52E07C8CA0086908F /* SupportingFiles */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9E3E2F472D13A7E300A7C2A1 /* SurgeonSimulator */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9E3E2F592D13A7E300A7C2A1 /* Build configuration list for PBXNativeTarget "SurgeonSimulator" */;
+			buildPhases = (
+				9E3E2F442D13A7E300A7C2A1 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SurgeonSimulator;
+			productName = SurgeonSimulator;
+			productReference = 9E3E2F482D13A7E300A7C2A1 /* SurgeonSimulator.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9E3E2F422D13A7E300A7C2A1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1250;
+			};
+			buildConfigurationList = 9E3E2F562D13A7E300A7C2A1 /* Build configuration list for PBXProject "SurgeonSimulator" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 9E3E2F412D13A7E300A7C2A1;
+			productRefGroup = 9E3E2F492D13A7E300A7C2A1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9E3E2F472D13A7E300A7C2A1 /* SurgeonSimulator */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9E3E2F442D13A7E300A7C2A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E21EEDBA2E07EFF00086908F /* TransferFunction.swift in Sources */,
+				E21EEDBC2E07F0350086908F /* Math.swift in Sources */,
+				E21EEDA72E07C8CA0086908F /* ContentView.swift in Sources */,
+				E21EEDA82E07C8CA0086908F /* SurgeonSimulatorApp.swift in Sources */,
+				E21EEDA92E07C8CA0086908F /* VolumeShaders.metal in Sources */,
+				E21EEDAA2E07C8CA0086908F /* MatrixUtilities.swift in Sources */,
+				E21EEDB12E07D34C0086908F /* shared.metal in Sources */,
+				E21EEDB62E07EFDA0086908F /* TransferFunctionEditor.swift in Sources */,
+				E21EEDB32E07D34C0086908F /* VolumeTypes.swift in Sources */,
+				E21EEDB42E07D34C0086908F /* VolumeCubeMaterial.swift in Sources */,
+				E21EEDAC2E07C8CA0086908F /* VolumeView.swift in Sources */,
+				E21EEDB82E07EFE80086908F /* Spline.swift in Sources */,
+				E21EEF3C2E095D9D0086908F /* NativeVideoProcessor.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		9E3E2F582D13A7E300A7C2A1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Source/SupportingFiles/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		9E3E2F5B2D13A7E300A7C2A1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Source/SupportingFiles/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9E3E2F562D13A7E300A7C2A1 /* Build configuration list for PBXProject "SurgeonSimulator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9E3E2F582D13A7E300A7C2A1 /* Debug */,
+				9E3E2F5B2D13A7E300A7C2A1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9E3E2F592D13A7E300A7C2A1 /* Build configuration list for PBXNativeTarget "SurgeonSimulator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9E3E2F582D13A7E300A7C2A1 /* Debug */,
+				9E3E2F5B2D13A7E300A7C2A1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9E3E2F422D13A7E300A7C2A1 /* Project object */;
+}

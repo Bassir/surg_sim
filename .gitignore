@@ -1,0 +1,147 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.hypothesis/
+.pytest_cache/
+celerybeat-schedule
+*.mo
+*.pot
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# OS-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Secrets
+*.env
+secrets/
+credentials/
+
+# Task Master specific
+tasks/
+scripts/task-complexity-report.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+
+# Environment variables
+.env
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS specific
+.DS_Store
+
+# Task files
+tasks.json
+tasks/
+
+# Data and output files
+*.MP4
+screen_rec_*.MP4
+/scripts/fast_frames_output/
+/scripts/scren_rec_2_deduplicated_output/
+/scripts/reconstructed_volume_*
+
+venv/
+*.DS_Store
+*.pyc
+
+# Data pipeline outputs
+scripts/screen_rec*
+web/data/
+
+# Ignore large binary data files
+web/data/*.bin
+
+# Ignore OS-specific files
+.DS_Store
+*/.DS_Store 
+
+# Rust build artifacts
+target/
+
+# Xcode user data and derived files
+**/*.xcuserstate
+**/xcuserdata/
+DerivedData/
+
+# Local scratch and generated outputs
+cpp_output/
+scripts/*_output/
+
+# Large media files
+*.mov
+*.MOV
+*.mp4
+*.MP4
+
+# Ignore sample image archives from the borrowed iOS project (tracked via LFS upstream)
+Volume-Rendering-In-iOS-main/VolumeRendering-iOS/Resource/Images/*.zip
+
+# Local tool metadata
+.cursor/
+
+# Local binaries
+surgeon_simulator_app
