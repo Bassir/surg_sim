@@ -277,9 +277,11 @@ class VolumeCubeMaterial: SCNMaterial {
         let bytesPerRow = MemoryLayout<Int16>.size * width
         // Metal requires row alignment (typically 256 bytes). Pad rows if needed.
         let rowAlignment = 256
+        let imageAlignment = 4096 // Metal often requires 4KB alignment for 3D image stride
         let alignedBytesPerRow = ((bytesPerRow + (rowAlignment - 1)) / rowAlignment) * rowAlignment
         let bytesPerImage = bytesPerRow * height
-        let alignedBytesPerImage = alignedBytesPerRow * height
+        let alignedBytesPerImageBase = alignedBytesPerRow * height
+        let alignedBytesPerImage = ((alignedBytesPerImageBase + (imageAlignment - 1)) / imageAlignment) * imageAlignment
         let totalBytesNeeded = bytesPerImage * depth
         let totalAlignedBytes = alignedBytesPerImage * depth
 
@@ -289,50 +291,42 @@ class VolumeCubeMaterial: SCNMaterial {
         let safeDataSize = min(data.count, totalBytesNeeded)
         let safeData = data.prefix(safeDataSize)
 
-        // If already aligned, upload directly. Otherwise, build a padded staging buffer.
-        if bytesPerRow == alignedBytesPerRow {
-            safeData.withUnsafeBytes { bytes in
-                guard let baseAddress = bytes.baseAddress else {
-                    print("❌ Failed to get data base address")
-                    return
+        // Upload per-slice to avoid any cross-slice stride issues
+        safeData.withUnsafeBytes { srcBuf in
+            guard let srcBase = srcBuf.bindMemory(to: UInt8.self).baseAddress else { return }
+            if bytesPerRow == alignedBytesPerRow {
+                print("🔄 Uploading per-slice (direct rows)...")
+                for z in 0..<depth {
+                    let srcImageOffset = z * bytesPerImage
+                    texture.replace(region: MTLRegionMake3D(0, 0, z, width, height, 1),
+                                    mipmapLevel: 0,
+                                    slice: 0,
+                                    withBytes: srcBase + srcImageOffset,
+                                    bytesPerRow: bytesPerRow,
+                                    bytesPerImage: bytesPerImage)
                 }
-                print("🔄 Replacing texture region (direct upload)...")
-                texture.replace(region: MTLRegionMake3D(0, 0, 0, width, height, depth),
-                                mipmapLevel: 0,
-                                slice: 0,
-                                withBytes: baseAddress,
-                                bytesPerRow: bytesPerRow,
-                                bytesPerImage: bytesPerImage)
-                print("✅ Texture data uploaded successfully")
-            }
-        } else {
-            print("⚙️ Building aligned staging buffer for Metal upload...")
-            var staging = Data(count: totalAlignedBytes)
-            staging.withUnsafeMutableBytes { dstBuf in
-                guard let dstBase = dstBuf.bindMemory(to: UInt8.self).baseAddress else { return }
-                safeData.withUnsafeBytes { srcBuf in
-                    guard let srcBase = srcBuf.bindMemory(to: UInt8.self).baseAddress else { return }
+                print("✅ Per-slice upload complete")
+            } else {
+                print("⚙️ Building per-slice aligned rows (bytesPerRow -> \(alignedBytesPerRow))...")
+                var rowStaging = Data(count: alignedBytesPerRow * height)
+                rowStaging.withUnsafeMutableBytes { dstBuf in
+                    guard let dstBase = dstBuf.bindMemory(to: UInt8.self).baseAddress else { return }
                     for z in 0..<depth {
                         let srcImageOffset = z * bytesPerImage
-                        let dstImageOffset = z * alignedBytesPerImage
                         for y in 0..<height {
                             let srcRowOffset = srcImageOffset + y * bytesPerRow
-                            let dstRowOffset = dstImageOffset + y * alignedBytesPerRow
+                            let dstRowOffset = y * alignedBytesPerRow
                             memcpy(dstBase + dstRowOffset, srcBase + srcRowOffset, bytesPerRow)
                         }
+                        texture.replace(region: MTLRegionMake3D(0, 0, z, width, height, 1),
+                                        mipmapLevel: 0,
+                                        slice: 0,
+                                        withBytes: dstBase,
+                                        bytesPerRow: alignedBytesPerRow,
+                                        bytesPerImage: alignedBytesPerRow * height)
                     }
                 }
-            }
-            staging.withUnsafeBytes { bytes in
-                guard let baseAddress = bytes.baseAddress else { return }
-                print("🔄 Replacing texture region (aligned upload)...")
-                texture.replace(region: MTLRegionMake3D(0, 0, 0, width, height, depth),
-                                mipmapLevel: 0,
-                                slice: 0,
-                                withBytes: baseAddress,
-                                bytesPerRow: alignedBytesPerRow,
-                                bytesPerImage: alignedBytesPerImage)
-                print("✅ Texture data uploaded successfully (aligned)")
+                print("✅ Per-slice aligned upload complete")
             }
         }
         
