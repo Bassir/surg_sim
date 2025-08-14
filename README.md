@@ -1,45 +1,45 @@
-# Surgeon Simulator - Volumetric Viewer
+# Surgeon Simulator (Xcode app) — Volumetric Viewer
 
-This project is a web-based 3D volumetric data viewer, specifically designed to visualize medical scan data from a screen-recorded video of axial slices (like an MRI or CT scan). It performs all video processing and rendering entirely on the client-side using WebAssembly and WebGL2.
+Native macOS app (Swift + Metal) for interactive 3D volume rendering from medical imaging data.
 
-## Features
+## Requirements
 
--   **Client-Side Processing:** No server backend is required. All processing happens in your browser.
--   **Video to 3D:** Converts a screen recording of medical scan slices into a 3D volume.
--   **WebGL2 Rendering:** Uses Volume Ray Casting for high-quality 3D rendering.
--   **Interactive Viewer:** Allows for rotation, zooming, and slicing through the 3D volume.
--   **Segmentation Tools:** Includes a "Magic Wand" tool to segment and highlight regions of interest.
+- macOS 14 (Sonoma) or later
+- Xcode 15 or later
+- Apple Silicon recommended
 
-## How to Run
+## Quick start (Xcode)
 
-1.  **Install Dependencies:**
-    You need to have [Node.js](https://nodejs.org/) and npm installed. Open a terminal in the project root and run:
-    ```bash
-    npm install
-    ```
+1. Clone the repo and switch to the Xcode-only branch:
+   ```bash
+   git clone https://github.com/Bassir/surg_sim.git
+   cd surg_sim
+   git checkout xcode-project
+   ```
+2. Open the project:
+   - Double‑click `SurgeonSimulator.xcodeproj`
+3. Build & Run:
+   - Scheme: `SurgeonSimulator`
+   - Destination: `My Mac`
+   - Press `⌘R` to run
 
-2.  **Start the Local Server:**
-    To run the application, use the following command:
-    ```bash
-    npm start
-    ```
-    This will start a local web server, and you can access the application by opening the URL shown in the terminal (usually `http://127.0.0.1:8080`).
+## Notes about data/assets
 
-3.  **Open the Application:**
-    Navigate to `http://127.0.0.1:8080/web/` in your web browser.
+- Large datasets and generated volumes are intentionally not included in this branch to keep it lightweight.
+- The renderer, shaders, and UI are included under `Source/` and the project is ready to build and launch.
+- If you need sample data, generate it locally (see scripts in the main branch) or contact the author for a small demo volume.
 
-## Architecture
+## Project layout (this branch)
 
-For a detailed explanation of the project's architecture, please see the [Architecture Document](./docs/architecture.md).
+- `Source/` — Swift/Metal source, transfer function editor, shaders, and app UI
+- `SurgeonSimulator.xcodeproj/` — Xcode project
+- `.gitignore`, `README.md`
 
-## Usage
+## Troubleshooting
 
-1.  Once the application is running, you will see a drag-and-drop zone.
-2.  Select or drag your screen-recorded video file onto the zone.
-3.  A progress bar will show the status of the in-browser video processing. This may take a few moments depending on the video length and your computer's performance.
-4.  Once processing is complete, the 3D viewer will appear.
-5.  Use the controls to manipulate and inspect the 3D model.
+- If Xcode prompts for developer tools or permissions, accept and retry build.
+- If you see a blank render, verify a volume is being provided by the app’s data path or sample generation routine.
 
----
+## Other modules
 
-*This project is managed using [Task Master](https://github.com/eyaltoledano/claude-task-master) for AI-driven development.*
+The web/Node.js pipeline and research scripts live on `main` and include large assets; they are not needed to open and run the native Xcode app in this branch.
