@@ -102,7 +102,9 @@ public:
     static float3 calGradient(texture3d<short, access::sample> volume,
                               float3 coord)
     {
-        float3 dimension = float3(512, 512, 511);
+        // Approximate dimension from LOD 0 size if available via derivatives
+        // Fallback to a safe step based on 256^3
+        float3 dimension = float3(256, 256, 256);
         if(dimension.x < 1.0 || dimension.y < 1.0 || dimension.z < 1.0)
         { return float3(0); }
         

@@ -275,29 +275,65 @@ class VolumeCubeMaterial: SCNMaterial {
         }
         
         let bytesPerRow = MemoryLayout<Int16>.size * width
+        // Metal requires row alignment (typically 256 bytes). Pad rows if needed.
+        let rowAlignment = 256
+        let alignedBytesPerRow = ((bytesPerRow + (rowAlignment - 1)) / rowAlignment) * rowAlignment
         let bytesPerImage = bytesPerRow * height
+        let alignedBytesPerImage = alignedBytesPerRow * height
         let totalBytesNeeded = bytesPerImage * depth
-        
-        print("📏 Texture layout: \(bytesPerRow) bytes/row, \(bytesPerImage) bytes/image, \(totalBytesNeeded) total")
-        
+        let totalAlignedBytes = alignedBytesPerImage * depth
+
+        print("📏 Texture layout: row=\(bytesPerRow) (aligned \(alignedBytesPerRow)), image=\(bytesPerImage) (aligned \(alignedBytesPerImage)), total=\(totalBytesNeeded) (aligned \(totalAlignedBytes))")
+
         // Ensure we don't exceed available data
         let safeDataSize = min(data.count, totalBytesNeeded)
         let safeData = data.prefix(safeDataSize)
-        
-        safeData.withUnsafeBytes { bytes in
-            guard let baseAddress = bytes.baseAddress else {
-                print("❌ Failed to get data base address")
-                return
+
+        // If already aligned, upload directly. Otherwise, build a padded staging buffer.
+        if bytesPerRow == alignedBytesPerRow {
+            safeData.withUnsafeBytes { bytes in
+                guard let baseAddress = bytes.baseAddress else {
+                    print("❌ Failed to get data base address")
+                    return
+                }
+                print("🔄 Replacing texture region (direct upload)...")
+                texture.replace(region: MTLRegionMake3D(0, 0, 0, width, height, depth),
+                                mipmapLevel: 0,
+                                slice: 0,
+                                withBytes: baseAddress,
+                                bytesPerRow: bytesPerRow,
+                                bytesPerImage: bytesPerImage)
+                print("✅ Texture data uploaded successfully")
             }
-            
-            print("🔄 Replacing texture region...")
-            texture.replace(region: MTLRegionMake3D(0, 0, 0, width, height, depth),
-                           mipmapLevel: 0,
-                           slice: 0,
-                           withBytes: baseAddress,
-                           bytesPerRow: bytesPerRow,
-                           bytesPerImage: bytesPerImage)
-            print("✅ Texture data uploaded successfully")
+        } else {
+            print("⚙️ Building aligned staging buffer for Metal upload...")
+            var staging = Data(count: totalAlignedBytes)
+            staging.withUnsafeMutableBytes { dstBuf in
+                guard let dstBase = dstBuf.bindMemory(to: UInt8.self).baseAddress else { return }
+                safeData.withUnsafeBytes { srcBuf in
+                    guard let srcBase = srcBuf.bindMemory(to: UInt8.self).baseAddress else { return }
+                    for z in 0..<depth {
+                        let srcImageOffset = z * bytesPerImage
+                        let dstImageOffset = z * alignedBytesPerImage
+                        for y in 0..<height {
+                            let srcRowOffset = srcImageOffset + y * bytesPerRow
+                            let dstRowOffset = dstImageOffset + y * alignedBytesPerRow
+                            memcpy(dstBase + dstRowOffset, srcBase + srcRowOffset, bytesPerRow)
+                        }
+                    }
+                }
+            }
+            staging.withUnsafeBytes { bytes in
+                guard let baseAddress = bytes.baseAddress else { return }
+                print("🔄 Replacing texture region (aligned upload)...")
+                texture.replace(region: MTLRegionMake3D(0, 0, 0, width, height, depth),
+                                mipmapLevel: 0,
+                                slice: 0,
+                                withBytes: baseAddress,
+                                bytesPerRow: alignedBytesPerRow,
+                                bytesPerImage: alignedBytesPerImage)
+                print("✅ Texture data uploaded successfully (aligned)")
+            }
         }
         
         return texture
