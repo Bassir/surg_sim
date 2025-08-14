@@ -203,55 +203,48 @@ class VolumeCubeMaterial: SCNMaterial {
             return nil
         }
         
-        // Decide whether to downsample before converting to Int16 to keep memory under limits
+        // Decide whether to downsample before upload to keep memory under limits
         let maxOutputBytes = 1024 * 1024 * 2048 // 2GB
         let inputCount = volumeData.count
         let bytesPerPixel = detectBytesPerPixel(data: volumeData, inputCount: inputCount)
         let pixelCount = inputCount / max(bytesPerPixel, 1)
-        let estimatedInt16Bytes = pixelCount * MemoryLayout<Int16>.size
+        let estimatedBytes = pixelCount * MemoryLayout<UInt8>.size
         
         var workingData = volumeData
         var workingDims = dimensions
         
-        if bytesPerPixel == 1 && estimatedInt16Bytes > maxOutputBytes {
+        if bytesPerPixel == 1 && estimatedBytes > maxOutputBytes {
             // Compute a downsample factor for X/Y to bring the output under the limit
-            let factor = computeDownsampleFactor(width: dimensions.x, height: dimensions.y, depth: dimensions.z, bytesPerVoxel: MemoryLayout<Int16>.size, maxBytes: maxOutputBytes)
-            print("⚠️ Output would be too large (\(estimatedInt16Bytes/1024/1024)MB). Downsampling XY by factor \(factor)")
+            let factor = computeDownsampleFactor(width: dimensions.x, height: dimensions.y, depth: dimensions.z, bytesPerVoxel: MemoryLayout<UInt8>.size, maxBytes: maxOutputBytes)
+            print("⚠️ Output would be too large (\(estimatedBytes/1024/1024)MB). Downsampling XY by factor \(factor)")
             let result = downsampleGrayscale8Bit(data: volumeData, width: dimensions.x, height: dimensions.y, depth: dimensions.z, factorXY: factor)
             workingData = result.data
             workingDims = SIMD3<Int>(result.width, result.height, result.depth)
             print("✅ Downsampled to \(workingDims.x)x\(workingDims.y)x\(workingDims.z) (\(workingData.count) bytes)")
         }
         
-        // Convert volume data and validate size
-        let convertedData = convertToInt16DataOptimized(workingData)
-        guard !convertedData.isEmpty else {
-            print("❌ Data conversion failed")
-            return nil
-        }
-        
         // Calculate expected size for the 3D texture
         let expectedVoxels = workingDims.x * workingDims.y * workingDims.z
-        let expectedBytes = expectedVoxels * MemoryLayout<Int16>.size
+        let expectedBytes = expectedVoxels * MemoryLayout<UInt8>.size
         
         print("📊 Expected: \(expectedVoxels) voxels, \(expectedBytes) bytes")
-        print("📊 Actual: \(convertedData.count) bytes")
+        print("📊 Actual: \(workingData.count) bytes")
         
         // Check if we have enough data
-        if convertedData.count < expectedBytes {
+        if workingData.count < expectedBytes {
             print("⚠️ Not enough data for texture. Using available data and adjusting depth.")
-            let actualVoxels = convertedData.count / MemoryLayout<Int16>.size
+            let actualVoxels = workingData.count / MemoryLayout<UInt8>.size
             let adjustedDepth = max(1, actualVoxels / (workingDims.x * workingDims.y))
             print("📏 Adjusting depth from \(workingDims.z) to \(adjustedDepth)")
             return createTextureWithData(device: device,
-                                         data: convertedData,
+                                         data: workingData,
                                          width: workingDims.x,
                                          height: workingDims.y,
                                          depth: adjustedDepth)
         } else {
             // Use the requested (possibly downsampled) dimensions
             return createTextureWithData(device: device,
-                                         data: convertedData,
+                                         data: workingData,
                                          width: workingDims.x,
                                          height: workingDims.y,
                                          depth: workingDims.z)
@@ -261,7 +254,7 @@ class VolumeCubeMaterial: SCNMaterial {
     private func createTextureWithData(device: MTLDevice, data: Data, width: Int, height: Int, depth: Int) -> MTLTexture? {
         let descriptor = MTLTextureDescriptor()
         descriptor.textureType = .type3D
-        descriptor.pixelFormat = .r16Sint
+        descriptor.pixelFormat = .r8Unorm
         descriptor.usage = .shaderRead
         descriptor.width = width
         descriptor.height = height
@@ -274,7 +267,7 @@ class VolumeCubeMaterial: SCNMaterial {
             return nil
         }
         
-        let bytesPerRow = MemoryLayout<Int16>.size * width
+        let bytesPerRow = MemoryLayout<UInt8>.size * width
         // Metal requires row alignment (typically 256 bytes). Pad rows if needed.
         let rowAlignment = 256
         let imageAlignment = 4096 // Metal often requires 4KB alignment for 3D image stride
