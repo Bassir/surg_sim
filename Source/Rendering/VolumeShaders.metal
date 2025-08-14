@@ -59,7 +59,7 @@ FragmentOut direct_volume_rendering(VertexOut in,
                                     constant SCNSceneBuffer& scn_frame,
                                     constant NodeBuffer& scn_node,
                                     constant VolumeUniforms& uniforms,
-                                     texture3d<uchar, access::sample> dicom,
+                                     texture3d<float, access::sample> dicom,
                                     texture2d<float, access::sample> transferColor)
 {
     FragmentOut out;
@@ -86,7 +86,7 @@ FragmentOut direct_volume_rendering(VertexOut in,
             currPos.z < 0 || currPos.z >= 1)
             break;
         
-        float density = dicom.sample(sampler3d, currPos).r; // 0..1
+        float density = dicom.sample(sampler3d, currPos).r; // 0..1 for r8Unorm
         
         float4 src = VR::getTfColour(transferColor, density);
         
@@ -125,7 +125,7 @@ FragmentOut surface_rendering(VertexOut in,
                              constant SCNSceneBuffer& scn_frame,
                              constant NodeBuffer& scn_node,
                              constant VolumeUniforms& uniforms,
-                              texture3d<uchar, access::sample> dicom,
+                              texture3d<float, access::sample> dicom,
                              texture2d<float, access::sample> transferColor)
 {
     FragmentOut out;
@@ -170,7 +170,7 @@ FragmentOut maximum_intensity_projection(VertexOut in,
                                         constant SCNSceneBuffer& scn_frame,
                                         constant NodeBuffer& scn_node,
                                         constant VolumeUniforms& uniforms,
-                                         texture3d<uchar, access::sample> dicom)
+                                         texture3d<float, access::sample> dicom)
 {
     FragmentOut out;
     
@@ -204,7 +204,7 @@ fragment FragmentOut volume_fragment(VertexOut in [[ stage_in ]],
                                       constant SCNSceneBuffer& scn_frame [[ buffer(0) ]],
                                       constant NodeBuffer& scn_node [[ buffer(1) ]],
                                       constant VolumeUniforms& uniforms [[ buffer(4) ]],
-                                       texture3d<uchar, access::sample> dicom [[ texture(0) ]],
+                                       texture3d<float, access::sample> dicom [[ texture(0) ]],
                                       texture2d<float, access::sample> transferColor [[ texture(3) ]])
 {
     switch (uniforms.method)

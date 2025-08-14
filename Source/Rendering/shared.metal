@@ -182,9 +182,9 @@ public:
         return raymarchInfo;
     }
 
-    static short getDensity(texture3d<uchar, access::sample> volume, float3 coord)
+    static short getDensity(texture3d<float, access::sample> volume, float3 coord)
     {
-        return short(volume.sample(sampler3d, coord).r * 255.0);
+        return short(volume.sample(sampler3d, coord).r * 4095.0);
     }
     
     static float4 getTfColour(texture2d<float, access::sample> tf, float density)
